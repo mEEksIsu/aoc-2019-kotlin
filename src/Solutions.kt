@@ -55,7 +55,7 @@ private fun getProgramOutput(program: MutableList<Int>): Int {
     var pointer = 0
     var opCode = program[pointer]
 
-    while (opCode != 99 && pointer <= program.size - 4) {
+    while (opCode != 99) {
         val noun = program[pointer + 1]
         val verb = program[pointer + 2]
         val outputPosition = program[pointer + 3]
@@ -139,6 +139,75 @@ private fun getManhattanDistance(firstPoint: Point, secondPoint: Point): Int {
     return kotlin.math.abs(firstPoint.x - secondPoint.x) + kotlin.math.abs(firstPoint.y - secondPoint.y)
 }
 
+fun day4Part1(): Int {
+    return (125730 .. 579381).filter { isValidPasswordPart1(getDigits(it)) }.count()
+}
+
+fun day4Part2(): Int {
+    return (125730 .. 579381).filter { isValidPasswordPart2(getDigits(it)) }.count()
+}
+
+private fun getDigits(n: Int): List<Int> {
+    var num = n
+    val digits = mutableListOf<Int>()
+
+    while (num > 0) {
+        digits.add(num % 10)
+        num /= 10
+    }
+
+    return digits.reversed()
+}
+
+private fun isValidPasswordPart1(password: List<Int>): Boolean {
+    var hasAdjacentDigits = false
+
+    val iter = password.listIterator()
+    var firstDigit = iter.next()
+
+    while(iter.hasNext()) {
+        val secondDigit = iter.next()
+        if (secondDigit == firstDigit) hasAdjacentDigits = true
+        if (secondDigit < firstDigit) return false
+
+        firstDigit = secondDigit
+    }
+
+    return hasAdjacentDigits
+}
+
+private fun isValidPasswordPart2(password: List<Int>): Boolean {
+    var hasTwoAdjacentDigits = false
+
+    val iter = password.listIterator()
+    var firstDigit = iter.next()
+    var currentGroupingLength = 1
+
+    while(iter.hasNext()) {
+        val secondDigit = iter.next()
+
+        if (secondDigit == firstDigit) {
+            currentGroupingLength++
+        } else if (secondDigit < firstDigit) {
+            return false
+        } else {
+            if (currentGroupingLength == 2) {
+                hasTwoAdjacentDigits = true
+            }
+
+            currentGroupingLength = 1
+        }
+
+        firstDigit = secondDigit
+    }
+
+    if (currentGroupingLength == 2) {
+        hasTwoAdjacentDigits = true
+    }
+
+    return hasTwoAdjacentDigits
+}
+
 fun main() {
-    print(day3Part2())
+    print(day4Part2())
 }
